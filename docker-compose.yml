@@ -1,0 +1,55 @@
+services:
+
+  api_gateway_rural_app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+
+    container_name: api_gateway_rural_app
+
+    ports:
+      - "3000:3000"
+
+    environment:
+      PORT: 3000
+      NODE_ENV: development
+      AUTH_SERVICE_URL: http://authentication-service:3001
+
+    networks:
+      - microservices-network
+
+    restart: unless-stopped
+
+
+  mysql:
+    image: mysql:8.4
+
+    container_name: mysql-auth
+
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: authentication_db
+      MYSQL_USER: auth_user
+      MYSQL_PASSWORD: auth_password
+
+    ports:
+      - "3307:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+    networks:
+      - microservices-network
+
+    restart: unless-stopped
+
+
+networks:
+
+  microservices-network:
+    driver: bridge
+
+
+volumes:
+
+  mysql_data:
